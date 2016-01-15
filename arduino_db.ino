@@ -10,7 +10,7 @@ long RMS;             // root mean squared calculation
 float db;
 
 long runningAverage = 0;        
-const int averagedOver = 16;    // time over which the samples are averaged
+const float averagedOver = 16;    // time over which the samples are averaged
 
 void setup() {
   Serial.begin(57600);
@@ -30,14 +30,12 @@ void loop() {
   // and then take the square root of the mean
   RMS = sqrt(sumOfSquares / numberOfSamples);     
   
-  // convert the RMS value back into a voltage and convert to db  
-  db = 20 * log10(RMS * (aref_voltage / 1023.0)); 
-  
   // method to create a running average - essentially a smoothing filter
-  //runningAverage = (((averagedOver - 1) * runningAverage) + db) / averagedOver;
-
-  //Serial.println(averageReading);
-  Serial.print("-");
+  runningAverage = (((averagedOver - 1) * runningAverage) + RMS) / averagedOver;
+  
+  // convert the RMS value back into a voltage and convert to db  
+  db = 20 * log10(runningAverage * (aref_voltage / 1023.0)); 
+  
   Serial.println(db);
 
   delay(100);
