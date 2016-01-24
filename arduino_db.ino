@@ -1,3 +1,14 @@
+/*
+  Arduino DB
+  
+  This sketch reads an analog input from a microphone and
+  converts the signal into amplitude measured in decibels.
+  
+  created 20 Jan 2016
+  
+  By Nicholas Johnson
+
+*/
 const int dc_offset = 328;          // DC Offset to be removed from incoming signal 
 const int numberOfSamples = 128;    // Number of samples to read at a time
 const float aref_voltage = 5.0;     // Reference voltage of the Arduino ADC
