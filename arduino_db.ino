@@ -9,9 +9,10 @@
   By Nicholas Johnson
 
 */
-const int dc_offset = 328;          // DC Offset to be removed from incoming signal 
+const int dc_offset = 512;          // DC Offset to be removed from incoming signal 
 const int numberOfSamples = 128;    // Number of samples to read at a time
-const float aref_voltage = 5.0;     // Reference voltage of the Arduino ADC
+const float aref_voltage = 3.3;     // Reference voltage of the Arduino ADC
+const float alpha = 0.95;           // smoothing value
 
 int sample;           // individual reading
 long signal;          
@@ -19,9 +20,7 @@ long averageReading;
 long RMS;             // root mean squared calculation
 
 float db;
-
-long runningAverage = 0;        
-const float averagedOver = 16;    // time over which the samples are averaged
+long smoothedValue = 0;
 
 void setup() {
   Serial.begin(57600);
@@ -41,13 +40,11 @@ void loop() {
   // and then take the square root of the mean
   RMS = sqrt(sumOfSquares / numberOfSamples);     
   
-  // method to create a running average - essentially a smoothing filter
-  runningAverage = (((averagedOver - 1) * runningAverage) + RMS) / averagedOver;
+  // smoothing filter
+  smoothedValue = (alpha * smoothedValue) + ((1-alpha) * RMS);
   
   // convert the RMS value back into a voltage and convert to db  
-  db = 20 * log10(runningAverage * (aref_voltage / 1023.0)); 
+  db = 20 * log10(smoothedValue * (aref_voltage / 1024.0)); 
   
   Serial.println(db);
-
-  delay(100);
 }
